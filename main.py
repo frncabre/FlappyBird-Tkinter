@@ -11,16 +11,16 @@ score = 0
 speed = 10
 game_over = False
 
-img_bird = Image.open('images/bird.png')
+img_bird = Image.open('img/bird.png')
 img_bird = ImageTk.PhotoImage(img_bird)
 
-img_pipe_down = Image.open('images/pipe.png')        
+img_pipe_down = Image.open('img/pipe.png')        
 img_pipe_top = img_pipe_down.rotate(180)
 
 img_pipe_down = ImageTk.PhotoImage(img_pipe_down)
 img_pipe_top = ImageTk.PhotoImage(img_pipe_top)
 
-img_reset = Image.open('images/reiniciar.png')
+img_reset = Image.open('img/reiniciar.png')
 img_reset = ImageTk.PhotoImage(img_reset)
 
 canvas = tk.Canvas(window, highlightthickness=0, bg= '#00bfff')
