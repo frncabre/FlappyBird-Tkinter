@@ -141,8 +141,7 @@ def fin_del_juego():
 
 
 lbl_fin_juego = tk.Label(window, text='¡Juego Terminado!', font=('D3 Egoistism outline', 30), fg='white', bg='#00bfff')
-bt_reiniciar = tk.Button(window, border=0, image=img_reiniciar, activebackground='#00bfff', bg='#00bfff',
-                          command=reiniciar_juego)
+bt_reiniciar = tk.Button(window, border=0, image=img_reiniciar, activebackground='#00bfff', bg='#00bfff', command=reiniciar_juego)
 
 window.after(50, mover_pajaro)
 window.after(50, mover_tubo)
