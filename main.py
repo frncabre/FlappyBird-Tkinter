@@ -1,5 +1,4 @@
 #Ejecutar con python en vez de python3
-from turtle import bgcolor
 from PIL import Image, ImageTk
 import tkinter as tk
 import tkinter.simpledialog
