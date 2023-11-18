@@ -1,4 +1,5 @@
 #Ejecutar con python en vez de python3
+from turtle import bgcolor
 from PIL import Image, ImageTk
 import tkinter as tk
 import tkinter.simpledialog
@@ -31,8 +32,6 @@ img_reiniciar = ImageTk.PhotoImage(img_reiniciar)
 canvas = tk.Canvas(window, highlightthickness=0, bg='#00bfff')
 canvas.place(relwidth=1, relheight=1)
 
-texto_puntuacion = canvas.create_text(50, 50, text='0', fill='white', font=('D3 Egoistism outline', 30))
-
 pajaro = canvas.create_image(x, y, anchor='nw', image=img_pajaro)
 tubo_arriba = canvas.create_image(1200, -550, anchor='nw', image=img_tubo_abajo)
 tubo_abajo = canvas.create_image(1200, 550, anchor='nw', image=img_tubo_arriba)
@@ -40,9 +39,10 @@ tubo_abajo = canvas.create_image(1200, 550, anchor='nw', image=img_tubo_arriba)
 def conexionBD(consulta, parametros=()):
     with sqlite3.connect("Flappy-Bird.db") as conexion:
         cursor = conexion.cursor()
-        resultado_con = cursor.execute(consulta, parametros)
+        cursor.execute(consulta, parametros)
+        res = cursor.fetchall()
         conexion.commit()
-        return resultado_con
+        return res
 
 def mover_pajaro_tecla(event):
     global x, y
@@ -104,14 +104,12 @@ def reiniciar_juego():
     mover_pajaro()
     mover_tubo()
 
-def ingresar_nombre_puntaje():
+def ingresar_nombre():
     nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
     while nombre_jugador is None or len(nombre_jugador) > 6:
         if nombre_jugador is None:
-            # El usuario cerró el cuadro de diálogo, pedir nuevamente el nombre
             nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
         else:
-            # El nombre ingresado es demasiado largo, pedir nuevamente el nombre
             tk.messagebox.showwarning("Advertencia", "El nombre debe tener como máximo 6 caracteres.")
             nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
 
@@ -123,13 +121,24 @@ def fin_del_juego():
     lbl_fin_juego.place(relx=0.5, rely=0.5, anchor='center')
     bt_reiniciar.place(relx=0.5, rely=0.7, anchor='center')
 
-    # Solicitar al jugador un nombre mediante el cuadro de diálogo
-    nombre_jugador = ingresar_nombre_puntaje()
+    nombre_jugador = ingresar_nombre()
 
-    # Subir el puntaje y el nombre a la base de datos
-    consulta = "INSERT INTO Jugador (nombre, puntaje) VALUES ('{0}', '{1}')".format(nombre_jugador, puntuacion)
-    conexionBD(consulta)
-    
+    query = "SELECT nombre FROM Jugador WHERE nombre='{0}'".format(nombre_jugador)
+    res = conexionBD(query)
+
+    if len(res) == 0:
+        insert = "INSERT INTO Jugador (nombre, puntaje) VALUES ('{0}', '{1}')".format(nombre_jugador, puntuacion)
+        conexionBD(insert)
+    else:
+        query = "SELECT puntaje FROM Jugador WHERE nombre='{0}'".format(nombre_jugador)
+        res_query = conexionBD(query)
+        res = res_query[0]
+        if res[0] > puntuacion:
+            tk.messagebox.showwarning("Advertencia", "El puntaje anterior era mas alto")
+        else:        
+            update = "UPDATE Jugador SET puntaje='{0}' WHERE nombre='{1}'".format(puntuacion  ,nombre_jugador)
+            conexionBD(update)
+
     while canvas.coords(pajaro):
         if canvas.bbox(pajaro)[0] < canvas.bbox(tubo_abajo)[2] and canvas.bbox(pajaro)[2] > canvas.bbox(tubo_abajo)[
             0]:
@@ -140,7 +149,23 @@ def fin_del_juego():
     bt_reiniciar.place(relx=0.5, rely=0.7, anchor='center')
 
 
-lbl_fin_juego = tk.Label(window, text='¡Juego Terminado!', font=('D3 Egoistism outline', 30), fg='white', bg='#00bfff')
+query_top1 = "SELECT MAX(puntaje), nombre FROM Jugador"
+res_top1 = conexionBD(query_top1)
+
+res_top1 = res_top1[0]
+
+jugador_top1 = res_top1[1]
+puntaje_top1 = res_top1[0]
+
+
+texto_puntuacion = canvas.create_text(50, 40, text='0', fill='white', font=('D3 Egoistism outline', 30))
+
+top_1_texto = canvas.create_text(70, 90, text="TOP UNO: \n {0} {1}".format(jugador_top1, puntaje_top1), fill='white', font=('D3 Egoistism outline', 20))
+box_texto = canvas.create_rectangle(canvas.bbox(top_1_texto),fill="#B8B8B8")
+canvas.tag_lower(box_texto,top_1_texto)
+
+
+lbl_fin_juego = tk.Label(window, text='Juego Terminado!', font=('D3 Egoistism outline', 30), fg='white', bg='#00bfff')
 bt_reiniciar = tk.Button(window, border=0, image=img_reiniciar, activebackground='#00bfff', bg='#00bfff', command=reiniciar_juego)
 
 window.after(50, mover_pajaro)
