@@ -8,9 +8,9 @@ from login import nombre
 
 print(nombre)
 
-window = tk.Tk()
-window.geometry('1000x600')
-window.title('Flappy Bird')
+game = tk.Tk()
+game.geometry('1000x600')
+game.title('Flappy Bird')
 
 x = 150
 y = 300
@@ -30,7 +30,7 @@ img_tubo_abajo = ImageTk.PhotoImage(img_tubo_abajo)
 img_reiniciar = Image.open('img/restart.png')
 img_reiniciar = ImageTk.PhotoImage(img_reiniciar)
 
-canvas = tk.Canvas(window, highlightthickness=0, bg='#00bfff')
+canvas = tk.Canvas(game, highlightthickness=0, bg='#00bfff')
 canvas.place(relwidth=1, relheight=1)
 
 pajaro = canvas.create_image(x, y, anchor='nw', image=img_pajaro)
@@ -52,18 +52,18 @@ def mover_pajaro_tecla(event):
         canvas.coords(pajaro, x, y)
 
 
-window.bind("<space>", mover_pajaro_tecla)
+game.bind("<space>", mover_pajaro_tecla)
 
 
 def mover_pajaro():
     global x, y
     y += 5
     canvas.coords(pajaro, x, y)
-    if y < 0 or y > window.winfo_height():
+    if y < 0 or y > game.winfo_height():
         fin_del_juego()
 
     if not fin_juego:
-        window.after(50, mover_pajaro)
+        game.after(50, mover_pajaro)
 
 
 def mover_tubo():
@@ -74,10 +74,10 @@ def mover_tubo():
         puntuacion += 1
         velocidad += 1
         canvas.itemconfigure(texto_puntuacion, text=str(puntuacion))
-        h = window.winfo_height()
+        h = game.winfo_height()
         num = random.choice([i for i in range(160, h, 160)])
-        canvas.coords(tubo_abajo, window.winfo_width(), num + 160)
-        canvas.coords(tubo_arriba, window.winfo_width(), num - 900)
+        canvas.coords(tubo_abajo, game.winfo_width(), num + 160)
+        canvas.coords(tubo_arriba, game.winfo_width(), num - 900)
 
     if 0 < canvas.coords(tubo_abajo)[0] < 160:
         if canvas.bbox(pajaro)[0] < canvas.bbox(tubo_abajo)[2] and canvas.bbox(pajaro)[2] > canvas.bbox(
@@ -86,7 +86,7 @@ def mover_tubo():
                     tubo_abajo)[1]:
                 fin_del_juego()
     if not fin_juego:
-        window.after(50, mover_tubo)
+        game.after(50, mover_tubo)
 
 
 def reiniciar_juego():
@@ -105,16 +105,6 @@ def reiniciar_juego():
     mover_pajaro()
     mover_tubo()
 
-"""def ingresar_nombre():
-    nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
-    while nombre_jugador is None or len(nombre_jugador) > 6:
-        if nombre_jugador is None:
-            nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
-        else:
-            tk.messagebox.showwarning("Advertencia", "El nombre debe tener como máximo 6 caracteres.")
-            nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
-
-    return nombre_jugador"""
 
 def fin_del_juego():
     global fin_juego
@@ -135,7 +125,7 @@ def fin_del_juego():
         if res[0] > puntuacion:
             tk.messagebox.showwarning("Advertencia", "El puntaje anterior era mas alto")
         else:        
-            update = "UPDATE Jugador SET puntaje='{0}' WHERE nombre='{1}'".format(puntuacion  ,nombre_jugador)
+            update = "UPDATE Jugador SET puntaje='{0}' WHERE nombre='{1}'".format(puntuacion, nombre)
             conexionBD(update)
 
     while canvas.coords(pajaro):
@@ -155,7 +145,7 @@ res_top1 = res_top1[0]
 jugador_top1 = res_top1[1]
 puntaje_top1 = res_top1[0]
 
-tabla_frame = tk.Frame(window, bg='#B8B8B8', padx=10, pady=10)
+tabla_frame = tk.Frame(game, bg='#B8B8B8', padx=10, pady=10)
 tabla_frame.place(relx=0.005, rely=0.1, relwidth=0.15, relheight=0.15)
 
 lbl_top1 = tk.Label(tabla_frame, text="Jugador Top 1", font=('D3 Egoistism outline', 16), bg='#B8B8B8', fg='white')
@@ -170,12 +160,12 @@ lbl_puntaje_top1.pack()
 texto_puntuacion = canvas.create_text(50, 40, text='0', fill='white', font=('D3 Egoistism outline', 30))
 
 
-lbl_fin_juego = tk.Label(window, text='Juego Terminado!', font=('D3 Egoistism outline', 30), fg='white', bg='#00bfff')
-bt_reiniciar = tk.Button(window, border=0, image=img_reiniciar, activebackground='#00bfff', bg='#00bfff', command=reiniciar_juego)
+lbl_fin_juego = tk.Label(game, text='Juego Terminado!', font=('D3 Egoistism outline', 30), fg='white', bg='#00bfff')
+bt_reiniciar = tk.Button(game, border=0, image=img_reiniciar, activebackground='#00bfff', bg='#00bfff', command=reiniciar_juego)
 
-window.after(50, mover_pajaro)
-window.after(50, mover_tubo)
+game.after(50, mover_pajaro)
+game.after(50, mover_tubo)
 
-window.call('wm', 'iconphoto', window._w, img_pajaro)
-window.mainloop()
+game.call('wm', 'iconphoto', game._w, img_pajaro)
+game.mainloop()
 

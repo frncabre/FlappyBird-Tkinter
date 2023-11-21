@@ -22,35 +22,28 @@ def iniciar_sesion():
     nombre = entry_usuario.get()
     contrasena = entry_contrasena.get()
 
-    # Consulta para verificar las credenciales en la base de datos
     consulta = "SELECT * FROM Jugador WHERE nombre = ? AND contrasena = ?"
     parametros = (nombre, contrasena)
     resultado = conexionBD(consulta, parametros)
 
     if resultado:
-        messagebox.showinfo("Inicio de Sesión", "Inicio de sesión exitoso")
-        #Ejecutar el archivo main.py
-        #main_function()  # Asegúrate de que esta función exista en main.py
-        game()
+        messagebox.showinfo("Inicio de Sesión", "BUENO VAMO A JUGAR")
+        login.destroy()
     else:
-        messagebox.showerror("Error", "Credenciales incorrectas")
+        messagebox.showerror("Error", "Usuario o Contraseña incorrectas")
 
-def game():
-    ventana.destroy()
+    
 
-# Crear la ventana principal
-ventana = tk.Tk()
-ventana.title("Inicio de Sesión")
-ventana.geometry("1000x600")
+login = tk.Tk()
+login.title("Inicio de Sesión")
+login.geometry("1000x600")
 
-# Crear widgets
-label_usuario = tk.Label(ventana, text="Usuario:")
-label_contrasena = tk.Label(ventana, text="Contraseña:")
-entry_usuario = tk.Entry(ventana)
-entry_contrasena = tk.Entry(ventana, show="*")
-boton_iniciar_sesion = tk.Button(ventana, text="Iniciar Sesión", command=iniciar_sesion)
+label_usuario = tk.Label(login, text="Usuario:")
+label_contrasena = tk.Label(login, text="Contraseña:")
+entry_usuario = tk.Entry(login)
+entry_contrasena = tk.Entry(login, show="*")
+boton_iniciar_sesion = tk.Button(login, text="Iniciar Sesión", command=iniciar_sesion)
 
-# Colocar widgets en la ventana
 label_usuario.pack()
 entry_usuario.pack()
 
@@ -59,5 +52,4 @@ entry_contrasena.pack()
 
 boton_iniciar_sesion.pack()
 
-# Iniciar el bucle de la interfaz gráfica
-ventana.mainloop()
+login.mainloop()
