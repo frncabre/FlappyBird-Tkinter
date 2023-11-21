@@ -4,7 +4,9 @@ import tkinter as tk
 import tkinter.simpledialog
 import random
 import sqlite3
+from login import nombre
 
+print(nombre)
 
 window = tk.Tk()
 window.geometry('1000x600')
@@ -103,7 +105,7 @@ def reiniciar_juego():
     mover_pajaro()
     mover_tubo()
 
-def ingresar_nombre():
+"""def ingresar_nombre():
     nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
     while nombre_jugador is None or len(nombre_jugador) > 6:
         if nombre_jugador is None:
@@ -112,7 +114,7 @@ def ingresar_nombre():
             tk.messagebox.showwarning("Advertencia", "El nombre debe tener como máximo 6 caracteres.")
             nombre_jugador = tk.simpledialog.askstring("Nombre", "Ingrese su nombre (máximo 6 caracteres):")
 
-    return nombre_jugador
+    return nombre_jugador"""
 
 def fin_del_juego():
     global fin_juego
@@ -120,16 +122,14 @@ def fin_del_juego():
     lbl_fin_juego.place(relx=0.5, rely=0.5, anchor='center')
     bt_reiniciar.place(relx=0.5, rely=0.7, anchor='center')
 
-    nombre_jugador = ingresar_nombre()
-
-    query = "SELECT nombre FROM Jugador WHERE nombre='{0}'".format(nombre_jugador)
+    query = "SELECT nombre FROM Jugador WHERE nombre='{0}'".format(nombre)
     res = conexionBD(query)
 
     if len(res) == 0:
-        insert = "INSERT INTO Jugador (nombre, puntaje) VALUES ('{0}', '{1}')".format(nombre_jugador, puntuacion)
+        insert = "INSERT INTO Jugador (nombre, puntaje) VALUES ('{0}', '{1}')".format(nombre, puntuacion)
         conexionBD(insert)
     else:
-        query = "SELECT puntaje FROM Jugador WHERE nombre='{0}'".format(nombre_jugador)
+        query = "SELECT puntaje FROM Jugador WHERE nombre='{0}'".format(nombre)
         res_query = conexionBD(query)
         res = res_query[0]
         if res[0] > puntuacion:
@@ -148,20 +148,26 @@ def fin_del_juego():
     bt_reiniciar.place(relx=0.5, rely=0.7, anchor='center')
 
 
-query_top1 = "SELECT MAX(puntaje), nombre FROM Jugador"
+query_top1 = "SELECT MAX(puntaje) as puntaje, nombre FROM Jugador"
 res_top1 = conexionBD(query_top1)
-
 res_top1 = res_top1[0]
 
 jugador_top1 = res_top1[1]
 puntaje_top1 = res_top1[0]
 
+tabla_frame = tk.Frame(window, bg='#B8B8B8', padx=10, pady=10)
+tabla_frame.place(relx=0.005, rely=0.1, relwidth=0.15, relheight=0.15)
+
+lbl_top1 = tk.Label(tabla_frame, text="Jugador Top 1", font=('D3 Egoistism outline', 16), bg='#B8B8B8', fg='white')
+lbl_top1.pack()
+
+lbl_nombre_top1 = tk.Label(tabla_frame, text=f"Nombre: {jugador_top1}", font=('D3 Egoistism outline', 12), bg='#B8B8B8', fg='white')
+lbl_nombre_top1.pack()
+
+lbl_puntaje_top1 = tk.Label(tabla_frame, text=f"Puntaje: {puntaje_top1}", font=('D3 Egoistism outline', 12), bg='#B8B8B8', fg='white')
+lbl_puntaje_top1.pack()
 
 texto_puntuacion = canvas.create_text(50, 40, text='0', fill='white', font=('D3 Egoistism outline', 30))
-
-top_1_texto = canvas.create_text(70, 90, text="TOP UNO: \n {0} {1}".format(jugador_top1, puntaje_top1), fill='white', font=('D3 Egoistism outline', 20))
-box_texto = canvas.create_rectangle(canvas.bbox(top_1_texto),fill="#B8B8B8")
-canvas.tag_lower(box_texto,top_1_texto)
 
 
 lbl_fin_juego = tk.Label(window, text='Juego Terminado!', font=('D3 Egoistism outline', 30), fg='white', bg='#00bfff')
