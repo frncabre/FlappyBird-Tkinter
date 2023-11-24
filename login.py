@@ -22,9 +22,8 @@ def iniciar_sesion():
     nombre = entry_usuario.get()
     contrasena = entry_contrasena.get()
 
-    consulta = "SELECT * FROM Jugador WHERE nombre = ? AND contrasena = ?"
-    parametros = (nombre, contrasena)
-    resultado = conexionBD(consulta, parametros)
+    consulta = "SELECT * FROM Jugador WHERE nombre = {0} AND contrasena = {1}".format(nombre, contrasena)
+    resultado = conexionBD(consulta)
 
     if resultado:
         messagebox.showinfo("Inicio de Sesión", "BUENO VAMO A JUGAR")
