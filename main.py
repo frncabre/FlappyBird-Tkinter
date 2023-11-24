@@ -1,12 +1,9 @@
 #Ejecutar con python en vez de python3
 from PIL import Image, ImageTk
 import tkinter as tk
-import tkinter.simpledialog
 import random
 import sqlite3
 from login import nombre
-
-print(nombre)
 
 game = tk.Tk()
 game.geometry('1000x600')
